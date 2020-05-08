@@ -3,16 +3,18 @@
 namespace Mpociot\ApiDoc\Extracting\Strategies\ResponseParameters;
 
 use Illuminate\Routing\Route;
+use Illuminate\Support\Arr;
 use Mpociot\ApiDoc\Extracting\RouteDocBlocker;
 use Mpociot\ApiDoc\Extracting\Strategies\Strategy;
 use Mpociot\ApiDoc\Extracting\TransformerHelpers;
 use Mpociot\Reflection\DocBlock;
+use Mpociot\Reflection\DocBlock\Tag;
 use ReflectionClass;
 use ReflectionMethod;
 
 class GetFromTransformerParamTag extends Strategy
 {
-    use FromDocBlockHelper;
+    use CollectTransformerParamsHelper;
     use TransformerHelpers;
 
     public function __invoke(Route $route, ReflectionClass $controller, ReflectionMethod $method, array $routeRules, array $context = [])
@@ -28,20 +30,10 @@ class GetFromTransformerParamTag extends Strategy
         }
 
         [$statusCode, $transformer] = $this->getStatusCodeAndTransformerClass($tag);
-
-        // Reflect the transformer
         $reflection = new ReflectionClass($transformer);
-        $method = 'transform';
 
-        if (!$reflection->hasMethod('transform')) {
-            $method = '__invoke';
-        }
-        if (!$reflection->hasMethod($method)) {
-            return null;
-        }
-
-        return $this->getResponseParametersFromDocBlock(
-            (new DocBlock($reflection->getMethod($method)->getDocComment() ?: ''))->getTags()
-        );
+        return array_merge($this->fromTransformMethod($reflection), $this->collectIncludes($reflection));
     }
+
+
 }
