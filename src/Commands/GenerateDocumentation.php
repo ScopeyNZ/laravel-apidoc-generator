@@ -26,6 +26,7 @@ class GenerateDocumentation extends Command
      */
     protected $signature = 'apidoc:generate
                             {--force : Force rewriting of existing routes}
+                            {--json= : Output collected route docs as JSON to a given file}
     ';
 
     /**
@@ -74,6 +75,13 @@ class GenerateDocumentation extends Command
                 /* @var $group Collection */
                 return $group->first()['metadata']['groupName'];
             }, SORT_NATURAL);
+
+        $jsonOutputFile = $this->option('json');
+        if ($jsonOutputFile && touch($path = base_path($jsonOutputFile))) {
+            $this->info('Dumping route JSON to ' . $path);
+            file_put_contents($path, json_encode($groupedRoutes, JSON_PRETTY_PRINT));
+        }
+
         $writer = new Writer(
             $this,
             $this->docConfig,
