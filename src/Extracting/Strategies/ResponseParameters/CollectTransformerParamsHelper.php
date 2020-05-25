@@ -44,10 +44,16 @@ trait CollectTransformerParamsHelper
      */
     protected function collectIncludes(ReflectionClass $transformerReflection): array
     {
-        $includes = $transformerReflection->getProperty('defaultIncludes');
-        $includes->setAccessible(true);
-        $includes = $includes->getValue($transformerReflection->newInstanceWithoutConstructor());
+        $defaultIncludes = $transformerReflection->getProperty('defaultIncludes');
+        $defaultIncludes->setAccessible(true);
+        $defaultIncludes = $defaultIncludes->getValue($transformerReflection->newInstanceWithoutConstructor());
 
+        $availableIncludes = $transformerReflection->getProperty('availableIncludes');
+        $availableIncludes->setAccessible(true);
+        $availableIncludes = $availableIncludes->getValue($transformerReflection->newInstanceWithoutConstructor());
+
+        $includes = $defaultIncludes + $availableIncludes;
+        
         if (empty($includes)) {
             return [];
         }
