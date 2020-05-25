@@ -52,7 +52,7 @@ trait CollectTransformerParamsHelper
         $availableIncludes->setAccessible(true);
         $availableIncludes = $availableIncludes->getValue($transformerReflection->newInstanceWithoutConstructor());
 
-        $includes = $defaultIncludes + $availableIncludes;
+        $includes = array_merge($defaultIncludes, $availableIncludes);
         
         if (empty($includes)) {
             return [];
