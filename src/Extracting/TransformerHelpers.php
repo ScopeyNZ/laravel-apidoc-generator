@@ -108,7 +108,9 @@ trait TransformerHelpers
     {
         $transformerTags = array_values(
             array_filter($tags, function ($tag) {
-                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), ['transformer', 'transformercollection']);
+                return ($tag instanceof Tag) && in_array(strtolower($tag->getName()), [
+                    'transformer', 'transformercollection', 'transformercollectionpaginated'
+                ]);
             })
         );
 
